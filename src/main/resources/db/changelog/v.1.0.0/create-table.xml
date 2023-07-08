@@ -1,0 +1,116 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
+                   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="wsulu">
+        <createTable tableName="personal_data">
+            <column name="customer_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="customer_name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="customer_surname" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="customer_primary_email" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="customer_primary_phone" type="numeric">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="cards">
+            <column name="customer_card_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="customer_id" type="serial">
+                <constraints foreignKeyName="fk_personal_data" references="personal_data(customer_id)" nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="groups_sku">
+            <column name="group_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="group_name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="sku">
+            <column name="sku_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="sku_name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="group_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints foreignKeyName="fk_groups_sku" references="groups_sku(group_id)" nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="stores">
+            <column name="id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="transaction_store_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints nullable="false" />
+            </column>
+            <column name="sku_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints foreignKeyName="fk_sku" references="sku(sku_id)" nullable="false" />
+            </column>
+            <column name="sku_purchase_price" type="numeric">
+                <constraints nullable="false" />
+            </column>
+            <column name="sku_retail_price" type="numeric">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="transactions">
+            <column name="transaction_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="customer_card_id" type="serial">
+                <constraints foreignKeyName="fk_cards" references="cards(customer_card_id)" nullable="false" />
+            </column>
+            <column name="transaction_summ" type="numeric">
+                <constraints nullable="false" />
+            </column>
+            <column name="transaction_date_time" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="transaction_store_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="checks">
+            <column name="id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="transaction_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints foreignKeyName="fk_transactions" references="transactions(transaction_id)" nullable="false"/>
+            </column>
+            <column name="sku_id" type="serial" autoIncrement="${autoIncrement}">
+                <constraints foreignKeyName="fk_sku_checks" references="sku(sku_id)" nullable="false"/>
+            </column>
+            <column name="sku_amount" type="numeric">
+                <constraints nullable="false" />
+            </column>
+            <column name="sku_summ" type="numeric">
+                <constraints nullable="false" />
+            </column>
+            <column name="sku_summ_paid" type="numeric">
+                <constraints nullable="false" />
+            </column>
+            <column name="sku_discount" type="numeric">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
